@@ -7,7 +7,8 @@ const loader = document.getElementById('lds-hourglass');
 const game = document.getElementById('game');
 const passMessage = document.getElementById('passMessage');
 const failMessage = document.getElementById('failMessage');
-const subject = localStorage.getItem('subject')
+const subject = localStorage.getItem('subject');
+const questionSection = document.getElementById('questionSection');
 
 let currentQuestion = {};
 let acceptingAnswers = false;
@@ -20,7 +21,9 @@ let answerToQuestion;
 let smileyPass = "&#128526;"
 let smileyFail = "&#128533;"
 let newNumber;
+let section;
 
+//assign chosen subject to a variable
 if(subject){
     newSubject = subject.toLocaleLowerCase();
 }else{
@@ -28,6 +31,8 @@ if(subject){
 }
 
 console.log(newSubject)
+
+//fetch from API******************************
 
 fetch(`https://questions.aloc.ng/api/q/7?subject=${newSubject}`
 )
@@ -45,6 +50,7 @@ fetch(`https://questions.aloc.ng/api/q/7?subject=${newSubject}`
         
         const answerChoices = Object.values(loadedQuestion.option);
         formattedQuestion.answer = loadedQuestion.answer;
+        formattedQuestion.section = loadedQuestion.section
        
         
         answerChoices.forEach((choice, index) => {
@@ -52,7 +58,7 @@ fetch(`https://questions.aloc.ng/api/q/7?subject=${newSubject}`
             
         })
 
-        // console.log(formattedQuestion)
+       
         return formattedQuestion;
     });
    
@@ -68,6 +74,7 @@ fetch(`https://questions.aloc.ng/api/q/7?subject=${newSubject}`
 const CORRECT_BONUS = 10;
 const MAX_QUESTION = 7;
 
+//startGAme function***************************************
 startGame = () => {
     questionCounter = 0;
     score = 0;
@@ -77,8 +84,7 @@ startGame = () => {
     loader.style.display = 'none';
 }
 
-//get question function
-
+//get question function***********************************
 getNewQuestion = () => {
 
     //if there are no question left in the array/ we have used up all the quwestions
@@ -102,7 +108,9 @@ getNewQuestion = () => {
     
    
     
-    question.innerText = currentQuestion.question;
+    question.innerHTML = currentQuestion.question;
+    section = currentQuestion.section ? `** ${currentQuestion.section} **` : "No Instructions";
+    questionSection.innerHTML = section;
     // console.log(currentQuestion)
     if(currentQuestion.answer == "a"){
         newNumber = 1
@@ -127,7 +135,7 @@ getNewQuestion = () => {
 
 
 
-//event listener for each selected choice of answer
+//event listener for each selected choice of answer*********************
 choices.forEach(choice => {
     choice.addEventListener('click', (e) => {
         if(!acceptingAnswers) return
@@ -166,7 +174,7 @@ choices.forEach(choice => {
 });
 
 
-
+//score increament function***********************
 incrementScore = num => {
     score += num;
     scoreText.innerText = score
