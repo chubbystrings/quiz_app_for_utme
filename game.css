@@ -41,8 +41,9 @@
     text-align: center;
     font-size: 2rem;
 }
-.hud-main-text {
+.hud-main-text { 
     text-align: center;
+    margin-top: 3rem;
 }
 
 #progressBar {
@@ -133,6 +134,12 @@
   #questionSection {
       margin-top: 3rem;
       font-size: 1.5rem;
+  }
+
+  small {
+    text-align: center; 
+    margin-top: 1rem;
+    font-size: 1rem;
   }
 
   

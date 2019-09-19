@@ -43,6 +43,9 @@ h3 {
     margin-top: 2rem;
     color: orangered;
 }
+a {
+    text-decoration: none;
+}
 
 
 /* UTILITIES*/
@@ -133,3 +136,13 @@ input {
 input::placeholder {
     color: #aaa;
 }
+
+select {
+    text-align: center;
+    text-align-last: center;
+    
+  }
+  option {
+    text-align: left;
+
+  }

@@ -9,6 +9,8 @@ const passMessage = document.getElementById('passMessage');
 const failMessage = document.getElementById('failMessage');
 const subject = localStorage.getItem('subject');
 const questionSection = document.getElementById('questionSection');
+const timer = document.getElementById('timer');
+const subjectHead = document.getElementById('subjectHead');
 
 let currentQuestion = {};
 let acceptingAnswers = false;
@@ -18,16 +20,19 @@ let availableQuestions = [];
 let questions = [];
 let possibleQuestions
 let answerToQuestion;
-let smileyPass = "&#128526;"
-let smileyFail = "&#128533;"
 let newNumber;
 let section;
+let pauseTime;
+
+//create random subject for quick play
+let subjectArray = ["chemistry", "biology", "mathematics", "english", "commerce", "government"];
+let randomSubjectNumber = Math.floor(Math.random() * 6)
 
 //assign chosen subject to a variable
 if(subject){
     newSubject = subject.toLocaleLowerCase();
 }else{
-    newSubject = "chemistry"
+    newSubject = subjectArray[randomSubjectNumber];
 }
 
 console.log(newSubject)
@@ -40,6 +45,8 @@ fetch(`https://questions.aloc.ng/api/q/7?subject=${newSubject}`
     return res.json();
 })
 .then(loadedQuestions => {
+    subjectHead.innerHTML = loadedQuestions.subject.toLocaleUpperCase();
+    subjectHead.style.textDecoration = 'underline';
     possibleQuestions = loadedQuestions.data
 
     questions = loadedQuestions.data.map(loadedQuestion => {
@@ -74,8 +81,9 @@ fetch(`https://questions.aloc.ng/api/q/7?subject=${newSubject}`
 const CORRECT_BONUS = 10;
 const MAX_QUESTION = 7;
 
-//startGAme function***************************************
+//startGame function***************************************
 startGame = () => {
+    
     questionCounter = 0;
     score = 0;
     availableQuestions = [...questions];
@@ -86,7 +94,7 @@ startGame = () => {
 
 //get question function***********************************
 getNewQuestion = () => {
-
+    questionTimer();
     //if there are no question left in the array/ we have used up all the quwestions
     if(availableQuestions.length === 0 || questionCounter >= MAX_QUESTION){
         localStorage.setItem('mostRecentScore', score)
@@ -103,11 +111,9 @@ getNewQuestion = () => {
     progressBarFull.style.width = `${(questionCounter / MAX_QUESTION) * 100}%`; //to get percentage
 
     const questionIndex =  Math.floor(Math.random() * availableQuestions.length)
-   
     currentQuestion = availableQuestions[questionIndex];
     
    
-    
     question.innerHTML = currentQuestion.question;
     section = currentQuestion.section ? `** ${currentQuestion.section} **` : "No Instructions";
     questionSection.innerHTML = section;
@@ -144,19 +150,22 @@ choices.forEach(choice => {
         const selectedChoice = e.target
         const selectedAnswer = selectedChoice.dataset["number"];
 
+        
         // console.log(newNumber)
         const classToApply = selectedAnswer == newNumber ? 'correct' : 'incorrect';
         if(classToApply === 'correct'){
             incrementScore(CORRECT_BONUS)
             passMessage.innerText = `Correct!!!! nice try that was awesome `;
+            clearInterval(pauseTime)
         }else{
             possibleQuestions.forEach((q) => {
                 if(q.question === currentQuestion.question){
-                    answerToQuestion = q.answer
-                    console.log(answerToQuestion)
+                    answerToQuestion = q.answer.toLocaleUpperCase();
+                    // console.log(answerToQuestion)
                 }
             })
-            failMessage.innerText = `Oops!!! wrong answer correct answer is ${answerToQuestion}`;    
+            failMessage.innerText = `Oops!!! wrong answer correct answer is ${answerToQuestion}`;  
+            clearInterval(pauseTime);  
         }
 
         selectedChoice.parentElement.classList.add(classToApply);
@@ -177,6 +186,31 @@ choices.forEach(choice => {
 //score increament function***********************
 incrementScore = num => {
     score += num;
-    scoreText.innerText = score
+    
 };
+
+//timer function
+questionTimer = () => {
+    let counter = 15;
+    pauseTime = setInterval(() => {
+        timer.innerHTML = counter;
+        counter--
+        if(counter > 6){
+            timer.style.color = 'orangered';
+        }
+        if(counter <= 6){
+            timer.style.color = 'green';
+        }
+        if (counter === -1) {
+            console.log("done")
+            clearInterval(pauseTime)
+            getNewQuestion()
+        }
+    }, 1500);
+
+}
+
+
+
+
 
