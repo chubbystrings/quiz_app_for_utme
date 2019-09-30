@@ -11,6 +11,7 @@ const subject = localStorage.getItem('subject');
 const questionSection = document.getElementById('questionSection');
 const timer = document.getElementById('timer');
 const subjectHead = document.getElementById('subjectHead');
+const errMessage = document.getElementById('errMessage');
 
 let currentQuestion = {};
 let acceptingAnswers = false;
@@ -73,7 +74,10 @@ fetch(`https://questions.aloc.ng/api/q/7?subject=${newSubject}`
     startGame();
 })
 .catch(err => {
-    console.log(err)
+    if(err){
+        errMessage.innerHTML = "Oops something went wrong check your connection"
+        errMessage.style.color = 'red'
+    }
 })
 
 
@@ -156,6 +160,7 @@ choices.forEach(choice => {
         if(classToApply === 'correct'){
             incrementScore(CORRECT_BONUS)
             passMessage.innerText = `Correct!!!! nice try that was awesome `;
+            timer.classList.remove('blink')
             clearInterval(pauseTime)
         }else{
             possibleQuestions.forEach((q) => {
@@ -164,7 +169,8 @@ choices.forEach(choice => {
                     // console.log(answerToQuestion)
                 }
             })
-            failMessage.innerText = `Oops!!! wrong answer correct answer is ${answerToQuestion}`;  
+            failMessage.innerText = `Oops!!! wrong answer correct answer is ${answerToQuestion}`;
+            timer.classList.remove('blink')  
             clearInterval(pauseTime);  
         }
 
@@ -191,20 +197,31 @@ incrementScore = num => {
 
 //timer function
 questionTimer = () => {
-    let counter = 15;
+    let counter
+    if(newSubject === "mathematics"){
+        counter = 40
+    }else{counter = 25}
+    
     pauseTime = setInterval(() => {
         timer.innerHTML = counter;
         counter--
-        if(counter > 6){
+        if(counter > 10){
             timer.style.color = 'orangered';
+            timer.classList.remove('blink')
         }
-        if(counter <= 6){
+        if(counter < 10){
             timer.style.color = 'green';
+            timer.classList.add('blink')
         }
         if (counter === -1) {
             console.log("done")
             clearInterval(pauseTime)
-            getNewQuestion()
+            timer.classList.remove('blink')
+            setTimeout(() => {
+                
+                getNewQuestion()
+            }, 1000)
+    
         }
     }, 1500);
 
