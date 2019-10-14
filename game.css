@@ -60,6 +60,18 @@
     width: 0%;
 }
 
+#counterBar {
+    
+    height: 10rem;
+    width: 10rem;
+    margin-top: 0.5rem;
+    padding: auto;
+    border-radius: 50%;
+    border: 1px solid orangered;
+    
+}
+
+
 /*LOADER */
 /* 
 #loader {

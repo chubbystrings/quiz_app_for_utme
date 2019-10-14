@@ -12,6 +12,7 @@ const questionSection = document.getElementById('questionSection');
 const timer = document.getElementById('timer');
 const subjectHead = document.getElementById('subjectHead');
 const errMessage = document.getElementById('errMessage');
+const counterBar = document.getElementById('counterBar');
 
 let currentQuestion = {};
 let acceptingAnswers = false;
@@ -206,11 +207,13 @@ questionTimer = () => {
         timer.innerHTML = counter;
         counter--
         if(counter > 10){
+            counterBar.style.border ="1px solid orangered"
             timer.style.color = 'orangered';
             timer.classList.remove('blink')
         }
         if(counter < 10){
             timer.style.color = 'green';
+            counterBar.style.border ="1px solid green"
             timer.classList.add('blink')
         }
         if (counter === -1) {
