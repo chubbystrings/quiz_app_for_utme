@@ -161,7 +161,7 @@ choices.forEach(choice => {
         if(classToApply === 'correct'){
             incrementScore(CORRECT_BONUS);
             passMessage.innerText = `Correct!!!! nice try that was awesome `;
-            // timer.classList.remove('blink');
+            text.classList.remove('blink');
             clearInterval(pauseTime);
         }else{
             possibleQuestions.forEach((q) => {
@@ -171,7 +171,7 @@ choices.forEach(choice => {
                 }
             });
             failMessage.innerText = `Oops!!! wrong answer correct answer is ${answerToQuestion}`;
-            // timer.classList.remove('blink');
+            text.classList.remove('blink');
             clearInterval(pauseTime);
         }
 
@@ -200,6 +200,7 @@ incrementScore = num => {
 questionTimer = () => {
     let counter;
     let counterDivider;
+    text.style.fill = "black"
     if(newSubject === "mathematics"){
         counter = 40;
         counterDivider = 40;
@@ -209,13 +210,8 @@ questionTimer = () => {
     }
 
     pauseTime = setInterval(() => {
-         
+        
         counter--;
-        // if(counter > 10){
-        //     counterBar.style.border ="1px solid orangered";
-        //     timer.style.color = 'orangered';
-        //     timer.classList.remove('blink');
-        // }
         if(counter < 10){
             text.style.fill = 'red'; 
             text.classList.add('blink'); 
@@ -232,16 +228,15 @@ questionTimer = () => {
             
         }
 
-        var progressValue = document.querySelector('.progress__value');
-        var RADIUS = 54;
-        var CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+        //radial progress bar function
+        const progressValue = document.querySelector('.progress__value');
+        const RADIUS = 54;
+        const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
         function progress(value) {
-            var progress = value / counterDivider;
-            var dashoffset = CIRCUMFERENCE * (1 - progress);
             
-            // console.log('progress:', value + '%', '|', 'offset:', dashoffset)
-            
+            const progress = value / counterDivider;
+            const dashoffset = CIRCUMFERENCE * (1 - progress);
             progressValue.style.strokeDashoffset = dashoffset;
             text.textContent = value;
         }
