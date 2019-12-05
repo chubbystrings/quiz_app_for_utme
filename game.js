@@ -13,6 +13,7 @@ const timer = document.getElementById('timer');
 const subjectHead = document.getElementById('subjectHead');
 const errMessage = document.getElementById('errMessage');
 const counterBar = document.getElementById('counterBar');
+const text = document.getElementById('text');
 
 let currentQuestion = {};
 let acceptingAnswers = false;
@@ -20,7 +21,7 @@ let score = 0;
 let questionCounter = 0;
 let availableQuestions = [];
 let questions = [];
-let possibleQuestions
+let possibleQuestions;
 let answerToQuestion;
 let newNumber;
 let section;
@@ -28,7 +29,7 @@ let pauseTime;
 
 //create random subject for quick play
 let subjectArray = ["chemistry", "biology", "mathematics", "english", "commerce", "government"];
-let randomSubjectNumber = Math.floor(Math.random() * 6)
+let randomSubjectNumber = Math.floor(Math.random() * 6);
 
 //assign chosen subject to a variable
 if(subject){
@@ -37,7 +38,7 @@ if(subject){
     newSubject = subjectArray[randomSubjectNumber];
 }
 
-console.log(newSubject)
+console.log(newSubject);
 
 //fetch from API******************************
 
@@ -49,37 +50,37 @@ fetch(`https://questions.aloc.ng/api/q/7?subject=${newSubject}`
 .then(loadedQuestions => {
     subjectHead.innerHTML = loadedQuestions.subject.toLocaleUpperCase();
     subjectHead.style.textDecoration = 'underline';
-    possibleQuestions = loadedQuestions.data
+    possibleQuestions = loadedQuestions.data;
 
     questions = loadedQuestions.data.map(loadedQuestion => {
         const formattedQuestion = {
             question: loadedQuestion.question
         };
 
-        
+
         const answerChoices = Object.values(loadedQuestion.option);
         formattedQuestion.answer = loadedQuestion.answer;
-        formattedQuestion.section = loadedQuestion.section
-       
-        
-        answerChoices.forEach((choice, index) => {
-            formattedQuestion["choice" + (index + 1)] = choice
-            
-        })
+        formattedQuestion.section = loadedQuestion.section;
 
-       
+
+        answerChoices.forEach((choice, index) => {
+            formattedQuestion["choice" + (index + 1)] = choice;
+
+        });
+
+
         return formattedQuestion;
     });
-   
-   
+
+
     startGame();
 })
 .catch(err => {
     if(err){
-        errMessage.innerHTML = "Oops something went wrong check your connection"
-        errMessage.style.color = 'red'
+        errMessage.innerHTML = "Oops something went wrong check your connection";
+        errMessage.style.color = 'red';
     }
-})
+});
 
 
 
@@ -88,91 +89,90 @@ const MAX_QUESTION = 7;
 
 //startGame function***************************************
 startGame = () => {
-    
+
     questionCounter = 0;
     score = 0;
     availableQuestions = [...questions];
     getNewQuestion();
-    game.classList.remove('hidden')
+    game.classList.remove('hidden');
     loader.style.display = 'none';
-}
+};
 
 //get question function***********************************
 getNewQuestion = () => {
     questionTimer();
     //if there are no question left in the array/ we have used up all the quwestions
     if(availableQuestions.length === 0 || questionCounter >= MAX_QUESTION){
-        localStorage.setItem('mostRecentScore', score)
-        localStorage.setItem('maxscore', MAX_QUESTION*10)
+        localStorage.setItem('mostRecentScore', score);
+        localStorage.setItem('maxscore', MAX_QUESTION*10);
         //go to the end of the page
-        return window.location.assign('/end.html')
+        return window.location.assign('/end.html');
     }
     questionCounter++;
     progressText.innerText = `Question ${questionCounter}/${MAX_QUESTION}`;
-   
-   
+
+
 
     //Update progress Bar in %
     progressBarFull.style.width = `${(questionCounter / MAX_QUESTION) * 100}%`; //to get percentage
 
-    const questionIndex =  Math.floor(Math.random() * availableQuestions.length)
+    const questionIndex =  Math.floor(Math.random() * availableQuestions.length);
     currentQuestion = availableQuestions[questionIndex];
-    
-   
+
+
     question.innerHTML = currentQuestion.question;
     section = currentQuestion.section ? `** ${currentQuestion.section} **` : "No Instructions";
     questionSection.innerHTML = section;
     // console.log(currentQuestion)
     if(currentQuestion.answer == "a"){
-        newNumber = 1
+        newNumber = 1;
     }else if(currentQuestion.answer == "b"){
-        newNumber = 2
+        newNumber = 2;
     }else if(currentQuestion.answer == "c"){
-        newNumber = 3
+        newNumber = 3;
     }else if(currentQuestion.answer == "d"){
-        newNumber = 4
+        newNumber = 4;
     }
     //loop through the choices and display each in the choices segment
     choices.forEach( choice => {
         const number = choice.dataset["number"];
-        choice.innerText = currentQuestion["choice" + number]
+        choice.innerText = currentQuestion["choice" + number];
     });
 
     //splice the currently viewed question
-    availableQuestions.splice(questionIndex, 1)
-    
-    acceptingAnswers = true
-}
+    availableQuestions.splice(questionIndex, 1);
+    acceptingAnswers = true;
+};
 
 
 
 //event listener for each selected choice of answer*********************
 choices.forEach(choice => {
     choice.addEventListener('click', (e) => {
-        if(!acceptingAnswers) return
+        if(!acceptingAnswers) return;
 
-        acceptingAnswers = false
-        const selectedChoice = e.target
+        acceptingAnswers = false;
+        const selectedChoice = e.target;
         const selectedAnswer = selectedChoice.dataset["number"];
 
-        
+
         // console.log(newNumber)
         const classToApply = selectedAnswer == newNumber ? 'correct' : 'incorrect';
         if(classToApply === 'correct'){
-            incrementScore(CORRECT_BONUS)
+            incrementScore(CORRECT_BONUS);
             passMessage.innerText = `Correct!!!! nice try that was awesome `;
-            timer.classList.remove('blink')
-            clearInterval(pauseTime)
+            // timer.classList.remove('blink');
+            clearInterval(pauseTime);
         }else{
             possibleQuestions.forEach((q) => {
                 if(q.question === currentQuestion.question){
                     answerToQuestion = q.answer.toLocaleUpperCase();
                     // console.log(answerToQuestion)
                 }
-            })
+            });
             failMessage.innerText = `Oops!!! wrong answer correct answer is ${answerToQuestion}`;
-            timer.classList.remove('blink')  
-            clearInterval(pauseTime);  
+            // timer.classList.remove('blink');
+            clearInterval(pauseTime);
         }
 
         selectedChoice.parentElement.classList.add(classToApply);
@@ -180,12 +180,12 @@ choices.forEach(choice => {
         //remove classToApply and empty success/failure message
         setTimeout(() => {
             selectedChoice.parentElement.classList.remove(classToApply);
-            passMessage.innerText = ''
-            failMessage.innerText = ''
+            passMessage.innerText = '';
+            failMessage.innerText = '';
             getNewQuestion();
-        }, 2000)
+        }, 2000);
 
-        
+
     });
 });
 
@@ -193,44 +193,62 @@ choices.forEach(choice => {
 //score increament function***********************
 incrementScore = num => {
     score += num;
-    
+
 };
 
 //timer function
 questionTimer = () => {
-    let counter
+    let counter;
+    let counterDivider;
     if(newSubject === "mathematics"){
-        counter = 40
-    }else{counter = 25}
-    
+        counter = 40;
+        counterDivider = 40;
+    }else{
+        counter = 25;
+        counterDivider = 25;
+    }
+
     pauseTime = setInterval(() => {
-        timer.innerHTML = counter;
-        counter--
-        if(counter > 10){
-            counterBar.style.border ="1px solid orangered"
-            timer.style.color = 'orangered';
-            timer.classList.remove('blink')
-        }
+         
+        counter--;
+        // if(counter > 10){
+        //     counterBar.style.border ="1px solid orangered";
+        //     timer.style.color = 'orangered';
+        //     timer.classList.remove('blink');
+        // }
         if(counter < 10){
-            timer.style.color = 'green';
-            counterBar.style.border ="1px solid green"
-            timer.classList.add('blink')
+            text.style.fill = 'red'; 
+            text.classList.add('blink'); 
         }
-        if (counter === -1) {
-            console.log("done")
-            clearInterval(pauseTime)
-            timer.classList.remove('blink')
+        if (counter === 0) {
+            console.log("done");
+            clearInterval(pauseTime);
+            text.classList.remove('blink');
+            text.style.fill = 'black';
             setTimeout(() => {
-                
-                getNewQuestion()
-            }, 1000)
-    
+
+                getNewQuestion();
+            }, 1000);
+            
         }
+
+        var progressValue = document.querySelector('.progress__value');
+        var RADIUS = 54;
+        var CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+        function progress(value) {
+            var progress = value / counterDivider;
+            var dashoffset = CIRCUMFERENCE * (1 - progress);
+            
+            // console.log('progress:', value + '%', '|', 'offset:', dashoffset)
+            
+            progressValue.style.strokeDashoffset = dashoffset;
+            text.textContent = value;
+        }
+
+        progressValue.style.strokeDasharray = CIRCUMFERENCE;
+        progress(counter);
+        
     }, 1500);
 
-}
-
-
-
-
-
+};

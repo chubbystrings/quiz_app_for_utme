@@ -1,3 +1,11 @@
+.progress {
+    transform: rotate(-90deg);
+}
+
+.progress__value {
+
+    stroke-linecap: round;
+}
 .choice-container {
     display: flex;
     margin-bottom: 0.5rem;
