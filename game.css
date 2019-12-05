@@ -6,6 +6,10 @@
 
     stroke-linecap: round;
 }
+
+.svgCircle {
+    padding-left: 5px;
+}
 .choice-container {
     display: flex;
     margin-bottom: 0.5rem;
